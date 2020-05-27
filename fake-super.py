@@ -1,7 +1,8 @@
 #!/usr/bin/python3
-# Usage: fake-super --restore <files…>
+# Usage: fake-super [--restore] <files…>
 import argparse
 import errno
+import os
 import stat
 import sys
 import xattr
@@ -92,19 +93,52 @@ def unstat(s):
     return attrs
 
 
-def statfmt(attrs):
-    return (fdesc[attrs['type']]
-            + ", permissions {perms:04o}, owner {owner}:{group}").format(**attrs)
+def statfmt(stat):
+    """Format status"""
+    return (fdesc[stat['type']]
+            + ", permissions {perms:04o}, owner {owner}:{group}").format(**stat)
+
+
+def chown(fn, stat):
+    try:
+        os.chown(fn, stat['owner'], stat['group'])
+    except OSError as e:
+        sys.exit("%s: chown: %s" % (fn, e.strerror))
+
+
+def restore(fn, stat):
+    """Restore attributes"""
+    t = stat['type']
+    if t in ('chr', 'blk', 'fif'):
+        try:
+            os.mknod(fn, stat['mode'],
+                device=os.makedev(stat['major'], stat['minor']))
+        except OSError as e:
+            sys.exit("%s: mknod: %s" % (fn, e.strerror))
+        chown(fn, stat)
+    elif t == 'reg':
+        # chown(2) resets setuid bits etc. in many settings, so it goes first
+        chown(fn, stat)
+        try:
+            os.chmod(fn, stat['perms'])
+        except OSError as e:
+            sys.exit("%s: chmod: %s" % (fn, e.strerror))
+    else:
+        sys.exit("%s: Don't know how to create %s", fn, statfmt(stat))
+
 
 def main():
     parser = argparse.ArgumentParser(
-        description="""Restore permissions stored by `rsync --fake-super`""")
+        description="""Handle permissions stored by `rsync --fake-super`""")
     parser.add_argument('--restore',
             action='store_true',
             help="""Restore rights""")
+    parser.add_argument('--quiet', '-q',
+            action='store_true',
+            help="""Be quiet: Do not output current status""")
     parser.add_argument('files',
             nargs='+',
-            help="""List of files whose permission to restore""")
+            help="""List of files""")
     args = parser.parse_args()
 
     retval = 0
@@ -123,7 +157,10 @@ def main():
             except StatFormatError as e:
                 sys.exit("%s: Illegal stat info" % (fn, e.message))
             else:
-                print("%s: %s" % (fn, statfmt(stat)))
+                if not args.quiet:
+                    print("%s: %s" % (fn, statfmt(stat)))
+                if args.restore:
+                    restore(fn, stat)
     # If there was an error in a list of files, mention it here to avoid confusion
     if retval == 1 and len(args.files) > 1:
         sys.exit("*** Some errors occured")
