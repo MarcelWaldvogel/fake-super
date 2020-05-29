@@ -58,3 +58,22 @@ An example for a plain file with mode `rw-rw-r--`:
        ^^^ Device ID 1,3
            ^^^ Belonging to root
 ```
+
+# Security considerations
+
+1. Using this program grants the unprivileged creator of the original files
+   posthumously essentially the same rights as a process running as `root`
+   would have had.  
+
+   **:warning: Only run this program if you trust the creator of the files
+   ultimately and can be sure the files have not been tampered with.**
+
+2. Specifying `user` or `group` as -1 (or anything that equals to -1 when cast
+   to a `uid_t` or `gid_t`, depending on your OS this could be any multiple of
+   65536 (2^16) or 4294967296 (2^32) minus 1) will leave the owner or group
+   unchanged. This is a limitation of the
+   [`chown()`](http://manpages.ubuntu.com/manpages/bionic/man2/chown.2.html)
+   system call. Under some circumstances, this could also be turned into a
+   [security problem](https://www.sudo.ws/alerts/minus_1_uid.html), but as you
+   have to trust the creator of the files fully anyway (see item 1 above), this
+   probably does not make a difference in most use cases.
