@@ -52,44 +52,44 @@ def unstat(s):
     # Parts
     parts = s.split(' ')
     if len(parts) != 3:
-        raise StatFormatError("three parts required")
+        raise StatFormatError("three parts required", s)
     if len(parts[0]) != 6:
-        raise StatFormatError("six-digit mode required")
+        raise StatFormatError("six-digit mode required", s)
 
     # Part 0: Mode (type, permissions)
     try:
         mode = attrs['mode'] = int(parts[0], 8)
     except ValueError:
-        raise StatFormatError("octal mode required")
+        raise StatFormatError("octal mode required", s)
     try:
         attrs['type'] = ftypes[stat.S_IFMT(mode)]
     except KeyError:
-        raise StatFormatError("unknown file type")
+        raise StatFormatError("unknown file type", s)
     attrs['perms'] = stat.S_IMODE(mode)
 
     # Part 1: Major,minor
     dev = parts[1].split(',')
     if len(dev) != 2:
-        raise StatFormatError("device id as 'major,minor' required")
+        raise StatFormatError("device id as 'major,minor' required", s)
     try:
         attrs['major'] = int(dev[0])
         attrs['minor'] = int(dev[1])
     except ValueError:
-        raise StatFormatError("numeric major,minor device ids required")
+        raise StatFormatError("numeric major,minor device ids required", s)
     if attrs['type'] not in ('blk', 'chr'):
         if attrs['major'] != 0 or attrs['minor'] != 0:
             raise(StatFormatError(
-                "major,minor device ids given for non-device"))
+                "major,minor device ids given for non-device", s))
 
     # Part 2: User:group
     ug = parts[2].split(':')
     if len(ug) != 2:
-        raise StatFormatError("ownership as 'owner:group' required")
+        raise StatFormatError("ownership as 'owner:group' required", s)
     try:
         attrs['owner'] = int(ug[0])
         attrs['group'] = int(ug[1])
     except ValueError:
-        raise StatFormatError("numeric user:group ids required")
+        raise StatFormatError("numeric user:group ids required", s)
 
     return attrs
 
@@ -129,7 +129,7 @@ def restore(fn, stat):
         sys.exit("%s: Don't know how to create %s", fn, statfmt(stat))
 
 
-def main():
+def main(sysargv=sys.argv[1:]):
     parser = argparse.ArgumentParser(
         description="""Handle permissions stored by `rsync --fake-super`""")
     parser.add_argument('--version',
@@ -144,7 +144,7 @@ def main():
     parser.add_argument('files',
                         nargs='+',
                         help="""List of files""")
-    args = parser.parse_args()
+    args = parser.parse_args(sysargv)
 
     retval = 0
     for fn in args.files:
@@ -161,7 +161,7 @@ def main():
             try:
                 stat = unstat(attr)
             except StatFormatError as e:
-                sys.exit("%s: Illegal stat info (%s)" % (fn, e.message))
+                sys.exit("%s: Illegal stat info (%r)" % (fn, e.args))
             else:
                 if not args.quiet:
                     print("%s: %s" % (fn, statfmt(stat)))
@@ -171,7 +171,7 @@ def main():
     # mention it here to avoid confusion
     if retval == 1 and len(args.files) > 1:
         sys.exit("*** Some errors occured")
-    sys.exit(retval)
+    return retval
 
 
 if __name__ == "__main__":
