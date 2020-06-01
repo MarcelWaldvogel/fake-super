@@ -35,7 +35,7 @@ mypy:
 .test:
   stage: Tests
   script:
-    - pip3 install nose coverage
+    - pip3 install nose coverage mock
     - nosetests
 
 test-3.5:
