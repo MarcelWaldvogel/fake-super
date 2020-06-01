@@ -35,7 +35,7 @@ mypy:
 .test:
   stage: Tests
   script:
-    - pip3 install nose
+    - pip3 install nose coverage
     - nosetests --with-coverage --cover-xml --cover-package=fake_super
 
 test-3.5:
@@ -53,3 +53,6 @@ test-3.7:
 test-3.8:
   extends: .test
   image: python:3.8
+  artifacts:
+    reports:
+      cobertura: coverage.xml
