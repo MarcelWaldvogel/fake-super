@@ -38,10 +38,6 @@ mypy:
     - pip3 install nose coverage mock
     - nosetests
 
-test-3.5:
-  extends: .test
-  image: python:3.5
-
 test-3.6:
   extends: .test
   image: python:3.6

@@ -32,7 +32,7 @@ setuptools.setup(
     license='MIT',
     packages=setuptools.find_packages(),
     install_requires=['setuptools', 'xattr'],
-    python_requires='>=3.4',
+    python_requires='>=3.6',
     entry_points={
         'console_scripts': [
             'fake-super=fake_super:main',
