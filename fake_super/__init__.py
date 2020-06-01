@@ -5,22 +5,20 @@ import errno
 import os
 import stat
 import sys
-import xattr
+import xattr  # type: ignore
 
-VERSION = "0.0.1+"
+from fake_super.version import VERSION
+
 
 class FormatError(ValueError):
     """Abstract base class"""
-    pass
 
 
 class StatFormatError(ValueError):
     """Format of user.rsync.%stat wrong"""
-    def __init__(self, message):
-        self.message = message
 
 
-ftypes = { 
+ftypes = {
     stat.S_IFSOCK: 'sck',
     stat.S_IFLNK: 'lnk',
     stat.S_IFREG: 'reg',
@@ -28,9 +26,9 @@ ftypes = {
     stat.S_IFDIR: 'dir',
     stat.S_IFCHR: 'chr',
     stat.S_IFIFO: 'fif',
-    stat.S_IFDOOR: 'dor',
-    stat.S_IFPORT: 'prt',
-    stat.S_IFWHT: 'wht'
+    stat.S_IFDOOR: 'dor',  # type: ignore
+    stat.S_IFPORT: 'prt',  # type: ignore
+    stat.S_IFWHT: 'wht'    # type: ignore
 }
 fdesc = {
     'sck': "socket",
@@ -80,7 +78,8 @@ def unstat(s):
         raise StatFormatError("numeric major,minor device ids required")
     if attrs['type'] not in ('blk', 'chr'):
         if attrs['major'] != 0 or attrs['minor'] != 0:
-            raise StatFormatError("major,minor device ids given for non-device")
+            raise(StatFormatError(
+                "major,minor device ids given for non-device"))
 
     # Part 2: User:group
     ug = parts[2].split(':')
@@ -98,7 +97,8 @@ def unstat(s):
 def statfmt(stat):
     """Format status"""
     return (fdesc[stat['type']]
-            + ", permissions {perms:04o}, owner {owner}:{group}").format(**stat)
+            + ", permissions {perms:04o}, owner {owner}:{group}"
+            ).format(**stat)
 
 
 def chown(fn, stat):
@@ -114,7 +114,7 @@ def restore(fn, stat):
     if t in ('chr', 'blk', 'fif'):
         try:
             os.mknod(fn, stat['mode'],
-                device=os.makedev(stat['major'], stat['minor']))
+                     device=os.makedev(stat['major'], stat['minor']))
         except OSError as e:
             sys.exit("%s: mknod: %s" % (fn, e.strerror))
         chown(fn, stat)
@@ -132,15 +132,18 @@ def restore(fn, stat):
 def main():
     parser = argparse.ArgumentParser(
         description="""Handle permissions stored by `rsync --fake-super`""")
+    parser.add_argument('--version',
+                        action='version',
+                        version=VERSION)
     parser.add_argument('--restore',
-            action='store_true',
-            help="""Restore rights""")
+                        action='store_true',
+                        help="""Restore rights""")
     parser.add_argument('--quiet', '-q',
-            action='store_true',
-            help="""Be quiet: Do not output current status""")
+                        action='store_true',
+                        help="""Be quiet: Do not output current status""")
     parser.add_argument('files',
-            nargs='+',
-            help="""List of files""")
+                        nargs='+',
+                        help="""List of files""")
     args = parser.parse_args()
 
     retval = 0
@@ -148,8 +151,9 @@ def main():
         try:
             attr = xattr.getxattr(fn, 'user.rsync.%stat')
         except OSError as e:
-            if e.errno == errno.ENODATA: # No such attribute
-                sys.stderr.write("%s: Missing `user.rsync.%%stat` attribute, skipping\n" % fn)
+            if e.errno == errno.ENODATA:  # No such attribute
+                sys.stderr.write("%s: Missing `user.rsync.%%stat` attribute,"
+                                 " skipping\n" % fn)
                 retval = 1
             else:
                 sys.exit("%s: %s" % (fn, e.strerror))
@@ -157,13 +161,14 @@ def main():
             try:
                 stat = unstat(attr)
             except StatFormatError as e:
-                sys.exit("%s: Illegal stat info" % (fn, e.message))
+                sys.exit("%s: Illegal stat info (%s)" % (fn, e.message))
             else:
                 if not args.quiet:
                     print("%s: %s" % (fn, statfmt(stat)))
                 if args.restore:
                     restore(fn, stat)
-    # If there was an error in a list of files, mention it here to avoid confusion
+    # If there was an error in a list of files,
+    # mention it here to avoid confusion
     if retval == 1 and len(args.files) > 1:
         sys.exit("*** Some errors occured")
     sys.exit(retval)

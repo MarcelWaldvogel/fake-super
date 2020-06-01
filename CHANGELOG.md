@@ -11,7 +11,10 @@ this project adheres to [Semantic Versioning](https://semver.org/), and
 - Support for `--quiet` and `--restore`
 - Added security considerations section to [`README.md`](./README.md)
 - Adopted Gitmoji
+- Added static analysis and unit tests with CI
 
 ## Fixed
+- Fixed static analysis complaints
 
 ## Changed
+- Moved VERSION to version.py (for coverage output regex)

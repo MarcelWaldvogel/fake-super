@@ -7,7 +7,8 @@ import setuptools
 def extract_version(filename):
     with open(filename, 'r') as fh:
         for line in fh:
-            match = re.match('''VERSION\s*=\s*["']([-_.0-9a-z]+)(\+?)["']''', line)
+            match = re.match(
+                    r'''VERSION\s*=\s*["']([-_.0-9a-z]+)(\+?)["']''', line)
             if match:
                 if match[2] == '':
                     return match[1]
@@ -21,7 +22,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name="fake-super",
-    version=extract_version('fake_super/__init__.py'),
+    version=extract_version('fake_super/version.py'),
     author="Marcel Waldvogel",
     author_email="marcel.waldvogel@trifence.ch",
     description="Handle information for `rsync --fake-super`",

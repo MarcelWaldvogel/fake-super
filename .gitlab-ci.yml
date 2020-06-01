@@ -1,0 +1,38 @@
+default:
+  image: python:3.8
+
+before_script:
+  - python --version
+  - pip3 install coverage nose flake8 mypy xattr
+
+stages:
+  - Static Analysis
+  - Tests
+
+flake8:
+  stage: Static Analysis
+  script: flake8
+
+mypy:
+  stage: Static Analysis
+  script: mypy -p fake_super
+
+.tests:
+  stage: Tests
+  script: nosetests --with-coverage --cover-xml --cover-package=fake_super
+
+tests-3.5:
+  extends: .tests
+  image: python:3.5
+
+tests-3.6:
+  extends: .tests
+  image: python:3.6
+
+tests-3.7:
+  extends: .tests
+  image: python:3.7
+
+tests-3.8:
+  extends: .tests
+  image: python:3.8
