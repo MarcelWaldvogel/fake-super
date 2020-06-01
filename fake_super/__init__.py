@@ -3,6 +3,8 @@
 import argparse
 import errno
 import os
+from pathlib import Path
+import secrets
 import stat
 import sys
 import xattr  # type: ignore
@@ -37,7 +39,7 @@ fdesc = {
     'blk': "block device ({major},{minor})",
     'dir': "directory",
     'chr': "character device ({major},{minor})",
-    'fif': "fifo",
+    'fif': "fifo (aka named pipe)",
     'dor': "door",
     'prt': "port",
     'wht': "whiteout entry"
@@ -101,23 +103,43 @@ def statfmt(stat):
             ).format(**stat)
 
 
-def chown(fn, stat):
+def chown(fn, stat, delete_on_error=False):
     try:
         os.chown(fn, stat['owner'], stat['group'])
     except OSError as e:
+        if delete_on_error:
+            os.unlink(fn)
         sys.exit("%s: chown: %s" % (fn, e.strerror))
+
+
+def temp_mknod_filename(fn):
+    """Return a path object temporary filename in the same directory as `fn`.
+
+    For very long input file names, the resulting file name my exceed the
+    maximum length allowed by the OS. This is considered to be unlikely here,
+    where only names of character and block devices or FIFOs (named pipes)
+    are used as input, which are (a) rare and (b) commonly very short."""
+    dirname = os.path.dirname(fn)
+    basename = os.path.basename(fn)
+    ext = secrets.token_urlsafe(6)  # 36 bits as URL-safe Base64
+    return Path(dirname, '.' + basename + '.' + ext)
 
 
 def restore(fn, stat):
     """Restore attributes"""
     t = stat['type']
     if t in ('chr', 'blk', 'fif'):
+        temp_fn = temp_mknod_filename(fn)
         try:
-            os.mknod(fn, stat['mode'],
+            os.mknod(temp_fn, stat['mode'],
                      device=os.makedev(stat['major'], stat['minor']))
         except OSError as e:
-            sys.exit("%s: mknod: %s" % (fn, e.strerror))
-        chown(fn, stat)
+            sys.exit("%s (for %s): mknod: %s" % (temp_fn, fn, e.strerror))
+        chown(temp_fn, stat, delete_on_error=True)
+        try:
+            os.rename(temp_fn, fn)
+        except OSError as e:
+            sys.exit("rename(%s, %s): %s" % (temp_fn, fn, e.strerror))
     elif t == 'reg':
         # chown(2) resets setuid bits etc. in many settings, so it goes first
         chown(fn, stat)

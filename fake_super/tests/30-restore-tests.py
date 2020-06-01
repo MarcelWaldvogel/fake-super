@@ -1,5 +1,5 @@
 import errno
-import os
+from pathlib import Path
 import stat
 
 from mock import patch, call
@@ -15,10 +15,13 @@ def assertSimilar(a, b):
                              % (a, type(a), b, type(b)))
 
 
-@patch('fake_super.os')
-def test_restore_chr(mock_os):
-    mock_os.makedev.return_value = os.makedev(10, 20)
-    fake_super.restore('/file/name',
+@patch('fake_super.secrets')
+@patch('fake_super.os.rename')
+@patch('fake_super.os.mknod')
+@patch('fake_super.os.chown')
+def test_restore_chr(mock_chown, mock_mknod, mock_rename, mock_secrets):
+    mock_secrets.token_urlsafe.return_value = '999999'
+    fake_super.restore('name',
                        {
                            'type': 'chr',
                            'mode': stat.S_IFCHR | 0o444,
@@ -27,13 +30,11 @@ def test_restore_chr(mock_os):
                            'owner': 123,
                            'group': 456
                        })
-    assertSimilar(mock_os.mock_calls,
-                  [
-                      call.makedev(10, 20),
-                      call.mknod('/file/name',
-                                 stat.S_IFCHR | 0o444, device=0xa14),
-                      call.chown('/file/name', 123, 456)
-                  ])
+    mock_mknod.assert_called_with(Path('.name.999999'),
+                                  stat.S_IFCHR | 0o444, device=0xa14)
+    mock_chown.assert_called_with(Path('.name.999999'), 123, 456)
+    mock_rename.assert_called_with(Path('.name.999999'),
+                                   'name')
 
 
 @patch('fake_super.os')

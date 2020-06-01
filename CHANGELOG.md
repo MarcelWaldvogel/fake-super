@@ -16,6 +16,9 @@ this project adheres to [Semantic Versioning](https://semver.org/), and
 ## Fixed
 - Fixed static analysis complaints
 - Fixed error messages
+- Devices and named pipes are created with temporary names first
+  (the underlying `mknod` system call does not replace the existing dummy file,
+  the one which has the `user.rsync.%stat` attribute stored)
 
 ## Changed
 - Moved VERSION to version.py (for coverage output regex)

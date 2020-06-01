@@ -1,3 +1,4 @@
+from pathlib import Path
 import errno
 
 from mock import patch, call
@@ -33,16 +34,21 @@ def test_query(mock_xattr, mock_print):
     assertSimilar(mock_print.mock_calls, [call(expected)])
 
 
-@patch('fake_super.os')
+@patch('fake_super.secrets')
+@patch('fake_super.os.rename')
+@patch('fake_super.os.mknod')
+@patch('fake_super.os.chown')
 @patch('fake_super.xattr')
-def test_restore(mock_xattr, mock_os):
+def test_restore(mock_xattr, mock_chown, mock_mknod, mock_rename,
+                 mock_secrets):
     mock_xattr.getxattr.return_value = b'010644 0,0 3:4'
-    mock_os.makedev.return_value = 0
+    mock_secrets.token_urlsafe.return_value = '999999'
     fake_super.main(['--quiet', '--restore', '/dev/something'])
-    expected = [call.makedev(0, 0),
-                call.mknod('/dev/something', 0o10644, device=0),
-                call.chown('/dev/something', 3, 4)]
-    assertSimilar(mock_os.mock_calls, expected)
+    mock_mknod.assert_called_with(Path('/dev/.something.999999'),
+                                  0o10644, device=0)
+    mock_chown.assert_called_with(Path('/dev/.something.999999'), 3, 4)
+    mock_rename.assert_called_with(Path('/dev/.something.999999'),
+                                   '/dev/something')
 
 
 @patch('fake_super.xattr')
