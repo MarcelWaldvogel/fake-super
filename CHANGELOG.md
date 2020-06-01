@@ -15,6 +15,7 @@ this project adheres to [Semantic Versioning](https://semver.org/), and
 
 ## Fixed
 - Fixed static analysis complaints
+- Fixed error messages
 
 ## Changed
 - Moved VERSION to version.py (for coverage output regex)
