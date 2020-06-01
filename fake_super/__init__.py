@@ -80,7 +80,7 @@ def unstat(s):
         raise StatFormatError("numeric major,minor device ids required")
     if attrs['type'] not in ('blk', 'chr'):
         if attrs['major'] != 0 or attrs['minor'] != 0:
-            raise("major,minor device ids given for non-device")
+            raise StatFormatError("major,minor device ids given for non-device")
 
     # Part 2: User:group
     ug = parts[2].split(':')
