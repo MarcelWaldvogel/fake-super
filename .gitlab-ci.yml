@@ -1,9 +1,20 @@
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+    - venv/
+
 default:
   image: python:3.8
 
 before_script:
   - python --version
-  - pip3 install coverage nose flake8 mypy xattr
+  - pip3 install virtualenv
+  - virtualenv venv
+  - source venv/bin/activate
+  - pip3 install xattr
 
 stages:
   - Static Analysis
@@ -11,28 +22,34 @@ stages:
 
 flake8:
   stage: Static Analysis
-  script: flake8
+  script:
+    - pip3 install flake8
+    - flake8 .
 
 mypy:
   stage: Static Analysis
-  script: mypy -p fake_super
+  script:
+    - pip3 install mypy
+    - mypy -p fake_super
 
-.tests:
+.test:
   stage: Tests
-  script: nosetests --with-coverage --cover-xml --cover-package=fake_super
+  script:
+    - pip3 install nose
+    - nosetests --with-coverage --cover-xml --cover-package=fake_super
 
-tests-3.5:
-  extends: .tests
+test-3.5:
+  extends: .test
   image: python:3.5
 
-tests-3.6:
-  extends: .tests
+test-3.6:
+  extends: .test
   image: python:3.6
 
-tests-3.7:
-  extends: .tests
+test-3.7:
+  extends: .test
   image: python:3.7
 
-tests-3.8:
-  extends: .tests
+test-3.8:
+  extends: .test
   image: python:3.8
