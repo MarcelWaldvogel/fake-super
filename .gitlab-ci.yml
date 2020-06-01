@@ -24,7 +24,7 @@ flake8:
   stage: Static Analysis
   script:
     - pip3 install flake8
-    - flake8 .
+    - flake8
 
 mypy:
   stage: Static Analysis
@@ -36,7 +36,7 @@ mypy:
   stage: Tests
   script:
     - pip3 install nose coverage
-    - nosetests --with-coverage --cover-xml --cover-package=fake_super
+    - nosetests
 
 test-3.5:
   extends: .test
