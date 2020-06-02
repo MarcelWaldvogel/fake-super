@@ -12,6 +12,7 @@ this project adheres to [Semantic Versioning](https://semver.org/), and
 - Added security considerations section to [`README.md`](./README.md)
 - Adopted Gitmoji
 - Added static analysis and unit tests with CI
+- Added `LICENSE.md` (MIT License)
 
 ## Fixed
 - Fixed static analysis complaints
