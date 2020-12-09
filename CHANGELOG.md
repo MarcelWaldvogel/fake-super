@@ -23,3 +23,6 @@ this project adheres to [Semantic Versioning](https://semver.org/), and
 
 ## Changed
 - Moved VERSION to version.py (for coverage output regex)
+- Version numbers of non-tagged versions now end in `.postX`, where `X` is the
+  number of commits since the tag (unless overridden by `FORCE_VERSION`
+  environment variable).
