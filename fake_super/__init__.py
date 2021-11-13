@@ -7,7 +7,6 @@ from pathlib import Path
 import secrets
 import stat
 import sys
-import xattr  # type: ignore
 
 from fake_super.version import VERSION
 
@@ -187,7 +186,7 @@ def main(sysargv=sys.argv[1:]):
     retval = 0
     for fn in args.files:
         try:
-            attr = xattr.getxattr(fn, 'user.rsync.%stat')
+            attr = os.getxattr(fn, 'user.rsync.%stat')
         except OSError as e:
             if e.errno == errno.ENODATA:  # No such attribute
                 sys.stderr.write("%s: Missing `user.rsync.%%stat` attribute,"

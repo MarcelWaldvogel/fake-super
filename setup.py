@@ -10,7 +10,7 @@ def extract_version(filename):
     with open(filename, 'r') as fh:
         for line in fh:
             match = re.match(
-                    r'''VERSION\s*=\s*["']([-_.0-9a-z]+)(\+?)["']''', line)
+                r'''VERSION\s*=\s*["']([-_.0-9a-z]+)(\+?)["']''', line)
             if match:
                 if match[2] == '':
                     return match[1]
@@ -50,7 +50,7 @@ setuptools.setup(
     url="https://gitlab.com/trifence/fake-super",
     license='MIT',
     packages=setuptools.find_packages(),
-    install_requires=['setuptools', 'xattr'],
+    install_requires=['setuptools'],
     python_requires='>=3.6',
     entry_points={
         'console_scripts': [

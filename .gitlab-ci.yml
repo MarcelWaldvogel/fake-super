@@ -8,34 +8,37 @@ variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 cache:
   paths:
-  - ".cache/pip"
-  - venv/
+    - ".cache/pip"
+    - venv/
 default:
   image: python:3.9
 before_script:
-- python --version
-- pip3 install virtualenv
-- virtualenv venv
-- source venv/bin/activate
-- pip3 install xattr
+  - python --version
+  - pip3 install virtualenv
+  - virtualenv venv
+  - source venv/bin/activate
+
 stages:
-- Static Analysis
-- Tests
+  - Static Analysis
+  - Tests
+
 flake8:
   stage: Static Analysis
   script:
-  - pip3 install flake8
-  - flake8
+    - pip3 install flake8
+    - flake8
+
 mypy:
   stage: Static Analysis
   script:
-  - pip3 install mypy
-  - mypy -p fake_super
+    - pip3 install mypy
+    - mypy -p fake_super
+
 ".test":
   stage: Tests
   script:
-  - pip3 install nose coverage mock
-  - nosetests
+    - pip3 install nose coverage mock
+    - nosetests
 test-3.6:
   extends: ".test"
   image: python:3.6
@@ -51,7 +54,8 @@ test-3.9:
   artifacts:
     reports:
       cobertura: coverage.xml
+
 sast:
   stage: Tests
 include:
-- template: Security/SAST.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml

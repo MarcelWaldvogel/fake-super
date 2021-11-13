@@ -40,7 +40,7 @@ def test_restore_chr(mock_lchown, mock_mknod, mock_rename, mock_secrets):
 @patch('fake_super.os.rename')
 @patch('fake_super.os.symlink')
 @patch('fake_super.os.lchown')
-@patch("builtins.open", new_callable=mock_open, read_data="../some/path")
+@patch('builtins.open', new_callable=mock_open, read_data='../some/path')
 def test_restore_lnk(mock_file, mock_lchown, mock_symlink, mock_rename,
                      mock_secrets):
     mock_secrets.token_urlsafe.return_value = '999999'
