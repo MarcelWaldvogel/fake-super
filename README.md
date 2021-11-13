@@ -13,6 +13,7 @@ to a remote backup server, on which the backup client should not have system
 * information about owners and groups,
 * access control lists (ACLs), or
 * special files, i.e.
+  - symbolic links,
   - character/block devices,
   - Unix domain sockets, and
   - FIFOs/named pipes
