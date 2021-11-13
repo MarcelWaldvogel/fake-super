@@ -1,7 +1,7 @@
 # Fake-super — A tool to save/restore `rsync --fake-super` attributes
 
-[![pipeline status](https://git.trifence.ch/MarcelWaldvogel/fake-super/badges/master/pipeline.svg)](https://git.trifence.ch/MarcelWaldvogel/fake-super/-/commits/master)
-[![coverage report](https://git.trifence.ch/MarcelWaldvogel/fake-super/badges/master/coverage.svg)](https://git.trifence.ch/MarcelWaldvogel/fake-super/-/commits/master)
+[![pipeline status](https://gitlab.com/MarcelWaldvogel/fake-super/badges/master/pipeline.svg)](https://gitlab.com/MarcelWaldvogel/fake-super/-/commits/master)
+[![coverage report](https://gitlab.com/MarcelWaldvogel/fake-super/badges/master/coverage.svg)](https://gitlab.com/MarcelWaldvogel/fake-super/-/commits/master)
 
 [`--fake-super`](https://download.samba.org/pub/rsync/rsync.html) is one of the
 coolest options of the [`rsync`](https://rsync.samba.org/) remote file
