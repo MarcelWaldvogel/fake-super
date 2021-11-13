@@ -23,7 +23,9 @@ def test_empty():
 
 @raises(SystemExit)
 def test_help():
-    # Also outputs "usage: nosetests3 [-h] [--version] [--restore] [--quiet] files [files ...]"
+    # Also outputs
+    # "usage: nosetests3 [-h] [--version] [--restore] [--quiet]
+    #     files [files ...]"
     fake_super.main(['--help'])
 
 
@@ -55,7 +57,8 @@ def test_restore(mock_xattr, mock_lchown, mock_mknod, mock_rename,
 
 @patch('fake_super.xattr')
 def test_noattr(mock_xattr):
-    # also outputs "dev/something2: Missing `user.rsync.%stat` attribute, skipping"
+    # also outputs
+    # "dev/something2: Missing `user.rsync.%stat` attribute, skipping"
     mock_xattr.getxattr.side_effect = OSError(errno.ENODATA,
                                               "No such attribute")
     retval = fake_super.main(['--quiet', '--restore', '/dev/something2'])
