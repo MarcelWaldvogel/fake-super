@@ -1,58 +1,58 @@
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-
 cache:
   paths:
-    - .cache/pip
-    - venv/
-
+  - ".cache/pip"
+  - venv/
 default:
   image: python:3.9
-
 before_script:
-  - python --version
-  - pip3 install virtualenv
-  - virtualenv venv
-  - source venv/bin/activate
-  - pip3 install xattr
-
+- python --version
+- pip3 install virtualenv
+- virtualenv venv
+- source venv/bin/activate
+- pip3 install xattr
 stages:
-  - Static Analysis
-  - Tests
-
+- Static Analysis
+- Tests
+- test
 flake8:
   stage: Static Analysis
   script:
-    - pip3 install flake8
-    - flake8
-
+  - pip3 install flake8
+  - flake8
 mypy:
   stage: Static Analysis
   script:
-    - pip3 install mypy
-    - mypy -p fake_super
-
-.test:
+  - pip3 install mypy
+  - mypy -p fake_super
+".test":
   stage: Tests
   script:
-    - pip3 install nose coverage mock
-    - nosetests
-
+  - pip3 install nose coverage mock
+  - nosetests
 test-3.6:
-  extends: .test
+  extends: ".test"
   image: python:3.6
-
 test-3.7:
-  extends: .test
+  extends: ".test"
   image: python:3.7
-
 test-3.8:
-  extends: .test
+  extends: ".test"
   image: python:3.8
-
 test-3.9:
-  extends: .test
+  extends: ".test"
   image: python:3.9
   artifacts:
     reports:
       cobertura: coverage.xml
+sast:
+  stage: test
+include:
+- template: Security/SAST.gitlab-ci.yml
