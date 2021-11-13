@@ -44,7 +44,7 @@ setuptools.setup(
     version=describe_or_extract_version('fake_super/version.py'),
     author="Marcel Waldvogel",
     author_email="marcel.waldvogel@trifence.ch",
-    description="Handle information for `rsync --fake-super`",
+    description="Inspect/apply information created by `rsync --fake-super`",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://gitlab.com/trifence/fake-super",
