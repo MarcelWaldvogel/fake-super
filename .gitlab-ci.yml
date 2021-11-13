@@ -21,7 +21,6 @@ before_script:
 stages:
 - Static Analysis
 - Tests
-- test
 flake8:
   stage: Static Analysis
   script:
@@ -53,6 +52,6 @@ test-3.9:
     reports:
       cobertura: coverage.xml
 sast:
-  stage: test
+  stage: Tests
 include:
 - template: Security/SAST.gitlab-ci.yml
