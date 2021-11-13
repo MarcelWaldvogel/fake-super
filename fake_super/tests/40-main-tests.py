@@ -17,11 +17,13 @@ def assertSimilar(a, b):
 
 @raises(SystemExit)
 def test_empty():
+    # Also outputs "error: the following arguments are required: files"
     fake_super.main()
 
 
 @raises(SystemExit)
 def test_help():
+    # Also outputs "usage: nosetests3 [-h] [--version] [--restore] [--quiet] files [files ...]"
     fake_super.main(['--help'])
 
 
@@ -37,25 +39,26 @@ def test_query(mock_xattr, mock_print):
 @patch('fake_super.secrets')
 @patch('fake_super.os.rename')
 @patch('fake_super.os.mknod')
-@patch('fake_super.os.chown')
+@patch('fake_super.os.lchown')
 @patch('fake_super.xattr')
-def test_restore(mock_xattr, mock_chown, mock_mknod, mock_rename,
+def test_restore(mock_xattr, mock_lchown, mock_mknod, mock_rename,
                  mock_secrets):
     mock_xattr.getxattr.return_value = b'010644 0,0 3:4'
     mock_secrets.token_urlsafe.return_value = '999999'
-    fake_super.main(['--quiet', '--restore', '/dev/something'])
-    mock_mknod.assert_called_with(Path('/dev/.something.999999'),
+    fake_super.main(['--quiet', '--restore', '/dev/something1'])
+    mock_mknod.assert_called_with(Path('/dev/.something1.999999'),
                                   0o10644, device=0)
-    mock_chown.assert_called_with(Path('/dev/.something.999999'), 3, 4)
-    mock_rename.assert_called_with(Path('/dev/.something.999999'),
-                                   '/dev/something')
+    mock_lchown.assert_called_with(Path('/dev/.something1.999999'), 3, 4)
+    mock_rename.assert_called_with(Path('/dev/.something1.999999'),
+                                   '/dev/something1')
 
 
 @patch('fake_super.xattr')
 def test_noattr(mock_xattr):
+    # also outputs "dev/something2: Missing `user.rsync.%stat` attribute, skipping"
     mock_xattr.getxattr.side_effect = OSError(errno.ENODATA,
                                               "No such attribute")
-    retval = fake_super.main(['--quiet', '--restore', '/dev/something'])
+    retval = fake_super.main(['--quiet', '--restore', '/dev/something2'])
     assertSimilar(retval, 1)
 
 
@@ -64,4 +67,4 @@ def test_noattr(mock_xattr):
 def test_nofile(mock_xattr):
     mock_xattr.getxattr.side_effect = OSError(errno.ENOENT,
                                               "No such file or directory")
-    fake_super.main(['--quiet', '--restore', '/dev/something'])
+    fake_super.main(['--quiet', '--restore', '/dev/something3'])

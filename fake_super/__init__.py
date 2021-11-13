@@ -105,14 +105,14 @@ def statfmt(stat):
 
 def chown(fn, stat, delete_on_error=False):
     try:
-        os.chown(fn, stat['owner'], stat['group'])
+        os.lchown(fn, stat['owner'], stat['group'])
     except OSError as e:
         if delete_on_error:
             os.unlink(fn)
         sys.exit("%s: chown: %s" % (fn, e.strerror))
 
 
-def temp_mknod_filename(fn):
+def mktempfn(fn):
     """Return a path object temporary filename in the same directory as `fn`.
 
     For very long input file names, the resulting file name my exceed the
@@ -129,10 +129,26 @@ def restore(fn, stat):
     """Restore attributes"""
     t = stat['type']
     if t in ('chr', 'blk', 'fif'):
-        temp_fn = temp_mknod_filename(fn)
+        temp_fn = mktempfn(fn)
         try:
             os.mknod(temp_fn, stat['mode'],
                      device=os.makedev(stat['major'], stat['minor']))
+        except OSError as e:
+            sys.exit("%s (for %s): mknod: %s" % (temp_fn, fn, e.strerror))
+        chown(temp_fn, stat, delete_on_error=True)
+        try:
+            os.rename(temp_fn, fn)
+        except OSError as e:
+            sys.exit("rename(%s, %s): %s" % (temp_fn, fn, e.strerror))
+    elif t == 'lnk':
+        try:
+            with open(fn, 'r') as link:
+                dest = link.read()
+        except OSError as e:
+            sys.exit("%s (for %s): read: %s" % (temp_fn, fn, e.strerror))
+        temp_fn = mktempfn(fn)
+        try:
+            os.symlink(temp_fn, dest)
         except OSError as e:
             sys.exit("%s (for %s): mknod: %s" % (temp_fn, fn, e.strerror))
         chown(temp_fn, stat, delete_on_error=True)
