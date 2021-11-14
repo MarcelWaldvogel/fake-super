@@ -129,6 +129,27 @@ def test_restore_lnk3(mock_file, mock_os, mock_secrets):
                        })
 
 
+@patch('fake_super.secrets')
+@patch('fake_super.os')
+@patch('builtins.open', new_callable=mock_open, read_data='../some/path')
+@raises(SystemExit)
+def test_restore_lnk4(mock_file, mock_os, mock_secrets):
+    mock_secrets.token_urlsafe.return_value = '999999'
+    mock_os.rename.side_effect = OSError(errno.EPERM, "Permission denied")
+    fake_super.restore('name',
+                       {
+                           'type': 'lnk',
+                           'mode': stat.S_IFLNK | 0o444,
+                           'major': 0,
+                           'minor': 0,
+                           'owner': 123,
+                           'group': 456
+                       })
+    mock_file.assert_called_with('name', 'r')
+    mock_os.symlink.assert_called_with(Path('.name.999999'), '../some/path')
+    mock_os.lchown.assert_called_with(Path('.name.999999'), 123, 456)
+
+
 @patch('fake_super.os')
 def test_restore_reg(mock_os):
     fake_super.restore('/file/name',
@@ -143,6 +164,30 @@ def test_restore_reg(mock_os):
                       call.lchown('/file/name', 123, 456),
                       call.chmod('/file/name', 0o4444)
                   ])
+
+
+@patch('fake_super.os')
+@raises(SystemExit)
+def test_restore_reg2(mock_os):
+    mock_os.chmod.side_effect = OSError(errno.EPERM, "Permission denied")
+    fake_super.restore('/file/name',
+                       {
+                           'type': 'reg',
+                           'perms': 0o4444,
+                           'owner': 123,
+                           'group': 456
+                       })
+
+
+@raises(SystemExit)
+def test_restore_unknown():
+    fake_super.restore('/file/name',
+                       {
+                           'type': 'wht',
+                           'perms': 0o4444,
+                           'owner': 123,
+                           'group': 456
+                       })
 
 
 @patch('fake_super.os')

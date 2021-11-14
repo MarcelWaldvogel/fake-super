@@ -165,7 +165,7 @@ def restore(fn, stat):
         except OSError as e:
             sys.exit("%s: chmod: %s" % (fn, e.strerror))
     else:
-        sys.exit("%s: Don't know how to create %s", fn, statfmt(stat))
+        sys.exit("%s: Don't know how to create %s" % (fn, statfmt(stat)))
 
 
 def main(sysargv=sys.argv[1:]):
