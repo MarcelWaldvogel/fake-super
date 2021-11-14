@@ -67,7 +67,26 @@ def test_noattr(mock_getxattr):
 
 @patch('fake_super.os.getxattr')
 @raises(SystemExit)
+def test_noattr2(mock_getxattr):
+    # also outputs
+    # "dev/something5: Missing `user.rsync.%stat` attribute, skipping"
+    # "dev/something5: Missing `user.rsync.%stat` attribute, skipping"
+    mock_getxattr.side_effect = OSError(errno.ENODATA,
+                                        "No such attribute")
+    fake_super.main(
+        ['--quiet', '--restore', '/dev/something5', '/dev/something6'])
+
+
+@ patch('fake_super.os.getxattr')
+@ raises(SystemExit)
 def test_nofile(mock_getxattr):
     mock_getxattr.side_effect = OSError(
         errno.ENOENT, "No such file or directory")
     fake_super.main(['--quiet', '--restore', '/dev/something3'])
+
+
+@ patch('fake_super.os.getxattr')
+@ raises(SystemExit)
+def test_bad_xattr(mock_getxattr):
+    mock_getxattr.return_value = b'1 2 3'
+    fake_super.main(['--quiet', '--restore', '/dev/something4'])
