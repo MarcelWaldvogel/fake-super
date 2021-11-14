@@ -51,8 +51,18 @@ def test_unstat1_illegal_number3():
 
 
 @raises(StatFormatError)
+def test_unstat1_illegal_type():
+    unstat(b'030000 0,0 0:0')
+
+
+@raises(StatFormatError)
 def test_unstat2_illegal_major():
     unstat(b'040444 1,0 0:0')
+
+
+@raises(StatFormatError)
+def test_unstat2_illegal_major_num():
+    unstat(b'060444 X,0 0:0')
 
 
 @raises(StatFormatError)

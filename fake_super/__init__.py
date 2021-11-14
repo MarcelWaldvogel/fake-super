@@ -146,7 +146,7 @@ def restore(fn, stat):
             with open(fn, 'r') as link:
                 dest = link.read()
         except OSError as e:
-            sys.exit("%s (for %s): read: %s" % (temp_fn, fn, e.strerror))
+            sys.exit("%s: open/read: %s" % (fn, e.strerror))
         temp_fn = mktempfn(fn)
         try:
             os.symlink(temp_fn, dest)

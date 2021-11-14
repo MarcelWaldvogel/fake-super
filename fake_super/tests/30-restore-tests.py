@@ -37,6 +37,40 @@ def test_restore_chr(mock_lchown, mock_mknod, mock_rename, mock_secrets):
 
 
 @patch('fake_super.secrets')
+@patch('fake_super.os')
+@raises(SystemExit)
+def test_restore_chr2(mock_os, mock_secrets):
+    mock_secrets.token_urlsafe.return_value = '999999'
+    mock_os.mknod.side_effect = OSError(errno.EPERM, "Permission denied")
+    fake_super.restore('name',
+                       {
+                           'type': 'chr',
+                           'mode': stat.S_IFCHR | 0o444,
+                           'major': 10,
+                           'minor': 20,
+                           'owner': 123,
+                           'group': 456
+                       })
+
+
+@patch('fake_super.secrets')
+@patch('fake_super.os')
+@raises(SystemExit)
+def test_restore_chr3(mock_os, mock_secrets):
+    mock_secrets.token_urlsafe.return_value = '999999'
+    mock_os.rename.side_effect = OSError(errno.EPERM, "Permission denied")
+    fake_super.restore('name',
+                       {
+                           'type': 'chr',
+                           'mode': stat.S_IFCHR | 0o444,
+                           'major': 10,
+                           'minor': 20,
+                           'owner': 123,
+                           'group': 456
+                       })
+
+
+@patch('fake_super.secrets')
 @patch('fake_super.os.rename')
 @patch('fake_super.os.symlink')
 @patch('fake_super.os.lchown')
@@ -57,6 +91,42 @@ def test_restore_lnk(mock_file, mock_lchown, mock_symlink, mock_rename,
     mock_symlink.assert_called_with(Path('.name.999999'), '../some/path')
     mock_lchown.assert_called_with(Path('.name.999999'), 123, 456)
     mock_rename.assert_called_with(Path('.name.999999'), 'name')
+
+
+@patch('fake_super.secrets')
+@patch('fake_super.os')
+@patch('builtins.open', new_callable=mock_open, read_data='../some/path')
+@raises(SystemExit)
+def test_restore_lnk2(mock_file, mock_os, mock_secrets):
+    mock_secrets.token_urlsafe.return_value = '999999'
+    mock_os.symlink.side_effect = OSError(errno.EPERM, "Permission denied")
+    fake_super.restore('name',
+                       {
+                           'type': 'lnk',
+                           'mode': stat.S_IFLNK | 0o444,
+                           'major': 0,
+                           'minor': 0,
+                           'owner': 123,
+                           'group': 456
+                       })
+
+
+@patch('fake_super.secrets')
+@patch('fake_super.os')
+@patch('builtins.open')
+@raises(SystemExit)
+def test_restore_lnk3(mock_file, mock_os, mock_secrets):
+    mock_secrets.token_urlsafe.return_value = '999999'
+    mock_file.side_effect = OSError(errno.EPERM, "Permission denied")
+    fake_super.restore('name',
+                       {
+                           'type': 'lnk',
+                           'mode': stat.S_IFLNK | 0o444,
+                           'major': 0,
+                           'minor': 0,
+                           'owner': 123,
+                           'group': 456
+                       })
 
 
 @patch('fake_super.os')
