@@ -54,6 +54,9 @@ test-3.9:
   artifacts:
     reports:
       cobertura: coverage.xml
+test-3.10:
+  extends: ".test"
+  image: python:3.10
 
 sast:
   stage: Tests
