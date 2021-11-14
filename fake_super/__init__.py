@@ -58,6 +58,8 @@ def unstat(s):
         raise StatFormatError("six-digit mode required", s)
 
     # Part 0: Mode (type, permissions)
+    if parts[0].lower().startswith('0o'):
+        raise StatFormatError("plain octal mode required", s)
     try:
         mode = attrs['mode'] = int(parts[0], 8)
     except ValueError:
