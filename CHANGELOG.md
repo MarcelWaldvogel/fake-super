@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), this
 project adheres to [Semantic Versioning](https://semver.org/), and
 [Gitmoji](https://gitmoji.carloscuesta.me/).
 
-# 0.1.0+ - [Unreleased]
+# 0.1.1 - 2021-11-14
 
 ## Added
 
