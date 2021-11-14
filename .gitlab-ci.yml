@@ -18,20 +18,22 @@ before_script:
 - virtualenv venv
 - source venv/bin/activate
 stages:
-- Static Analysis
-- Tests
+- lint
+- unit
+- test
+- versions
 flake8:
-  stage: Static Analysis
+  stage: lint
   script:
   - pip3 install flake8
   - flake8
 mypy:
-  stage: Static Analysis
+  stage: lint
   script:
   - pip3 install mypy
   - mypy -p fake_super
 ".test":
-  stage: Tests
+  stage: versions
   script:
   - pip3 install nose coverage mock
   - nosetests
@@ -46,12 +48,11 @@ test-3.8:
   image: python:3.8
 test-3.9:
   extends: ".test"
+  stage: unit
   image: python:3.9
   artifacts:
     reports:
       cobertura: coverage.xml
-sast:
-  stage: Tests
 include:
 - template: Security/SAST.gitlab-ci.yml
 - template: Security/Dependency-Scanning.gitlab-ci.yml
