@@ -1,3 +1,5 @@
+![fake-super icon](assets/fake-super.svg)
+
 # Fake-super — A tool to save/restore `rsync --fake-super` attributes
 
 [![pipeline status](https://gitlab.com/MarcelWaldvogel/fake-super/badges/main/pipeline.svg)](https://gitlab.com/MarcelWaldvogel/fake-super/-/commits/main)
