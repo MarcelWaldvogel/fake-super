@@ -47,7 +47,7 @@ setuptools.setup(
     description="Inspect/apply information created by `rsync --fake-super`",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://gitlab.com/trifence/fake-super",
+    url="https://netfuture.ch/tools/fake-super",
     license='MIT',
     packages=setuptools.find_packages(),
     install_requires=['setuptools'],
