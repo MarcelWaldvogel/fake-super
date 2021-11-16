@@ -81,8 +81,8 @@ def test_unstat5_4parts():
 
 
 def test_unstat5_newline():
-    with raises(StatFormatError, match=r''):
-        unstat(b'040444 0,1 0:0\n')
+    with raises(StatFormatError, match=r'^owner:group ids not normalized'):
+        unstat(b'040444 0,0 0:0\n')
 
 
 def test_unstat6_major_minor_rev():

@@ -77,7 +77,8 @@ def unstat(s):
         attrs['major'] = int(dev[0])
         attrs['minor'] = int(dev[1])
     except ValueError:
-        raise StatFormatError("numeric major,minor device ids required", s)
+    if parts[1] != f"{attrs['major']},{attrs['minor']}":
+        raise StatFormatError(f"major,minor device ids not normalized: {s}")
     if attrs['type'] not in ('blk', 'chr'):
         if attrs['major'] != 0 or attrs['minor'] != 0:
             raise(StatFormatError(
@@ -91,7 +92,8 @@ def unstat(s):
         attrs['owner'] = int(ug[0])
         attrs['group'] = int(ug[1])
     except ValueError:
-        raise StatFormatError("numeric user:group ids required", s)
+    if parts[2] != f"{attrs['owner']}:{attrs['group']}":
+        raise StatFormatError(f"owner:group ids not normalized: {s}")
 
     return attrs
 
