@@ -17,10 +17,6 @@ except PackageNotFoundError:
     VERSION = '[UNKNOWN]'
 
 
-class FormatError(ValueError):
-    """Abstract base class"""
-
-
 class StatFormatError(ValueError):
     """Format of user.rsync.%stat wrong"""
 
