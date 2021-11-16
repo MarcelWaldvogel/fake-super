@@ -52,46 +52,48 @@ def unstat(s):
     # Parts
     parts = s.split(' ')
     if len(parts) != 3:
-        raise StatFormatError("three parts required", s)
+        raise StatFormatError(f"three parts required: {s}")
     if len(parts[0]) != 6:
-        raise StatFormatError("six-digit mode required", s)
+        raise StatFormatError(f"six-digit mode required: {s}")
 
     # Part 0: Mode (type, permissions)
     if parts[0].lower().startswith('0o'):
-        raise StatFormatError("plain octal mode required", s)
+        raise StatFormatError(f"plain octal mode required: {s}")
     try:
         mode = attrs['mode'] = int(parts[0], 8)
     except ValueError:
-        raise StatFormatError("octal mode required", s)
+        raise StatFormatError(f"octal mode required: {s}")
     try:
         attrs['type'] = ftypes[stat.S_IFMT(mode)]
     except KeyError:
-        raise StatFormatError("unknown file type", s)
+        raise StatFormatError(f"unknown file type: {s}")
     attrs['perms'] = stat.S_IMODE(mode)
 
     # Part 1: Major,minor
     dev = parts[1].split(',')
     if len(dev) != 2:
-        raise StatFormatError("device id as 'major,minor' required", s)
+        raise StatFormatError(f"device id as 'major,minor' required: {s}")
     try:
         attrs['major'] = int(dev[0])
         attrs['minor'] = int(dev[1])
     except ValueError:
+        raise StatFormatError(f"numeric major,minor device ids required: {s}")
     if parts[1] != f"{attrs['major']},{attrs['minor']}":
         raise StatFormatError(f"major,minor device ids not normalized: {s}")
     if attrs['type'] not in ('blk', 'chr'):
         if attrs['major'] != 0 or attrs['minor'] != 0:
             raise(StatFormatError(
-                "major,minor device ids given for non-device", s))
+                f"major,minor device ids given for non-device: {s}"))
 
     # Part 2: User:group
     ug = parts[2].split(':')
     if len(ug) != 2:
-        raise StatFormatError("ownership as 'owner:group' required", s)
+        raise StatFormatError(f"ownership as 'owner:group' required: {s}")
     try:
         attrs['owner'] = int(ug[0])
         attrs['group'] = int(ug[1])
     except ValueError:
+        raise StatFormatError(f"numeric user:group ids required: {s}")
     if parts[2] != f"{attrs['owner']}:{attrs['group']}":
         raise StatFormatError(f"owner:group ids not normalized: {s}")
 

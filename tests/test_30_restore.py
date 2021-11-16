@@ -41,7 +41,7 @@ def test_restore_chr(mock_lchown, mock_mknod, mock_rename, mock_secrets):
 def test_restore_chr2(mock_os, mock_secrets):
     mock_secrets.token_urlsafe.return_value = '999999'
     mock_os.mknod.side_effect = OSError(errno.EPERM, "Permission denied")
-    with raises(SystemExit, match=r''):
+    with raises(SystemExit, match=r'mknod: Permission denied'):
         fake_super.restore('name',
                            {
                                'type': 'chr',
@@ -58,7 +58,7 @@ def test_restore_chr2(mock_os, mock_secrets):
 def test_restore_chr3(mock_os, mock_secrets):
     mock_secrets.token_urlsafe.return_value = '999999'
     mock_os.rename.side_effect = OSError(errno.EPERM, "Permission denied")
-    with raises(SystemExit, match=r''):
+    with raises(SystemExit, match=r'rename.*: Permission denied'):
         fake_super.restore('name',
                            {
                                'type': 'chr',
@@ -99,7 +99,7 @@ def test_restore_lnk(mock_file, mock_lchown, mock_symlink, mock_rename,
 def test_restore_lnk2(mock_file, mock_os, mock_secrets):
     mock_secrets.token_urlsafe.return_value = '999999'
     mock_os.symlink.side_effect = OSError(errno.EPERM, "Permission denied")
-    with raises(SystemExit, match=r''):
+    with raises(SystemExit, match=r'mknod: Permission denied'):
         fake_super.restore('name',
                            {
                                'type': 'lnk',
@@ -117,7 +117,7 @@ def test_restore_lnk2(mock_file, mock_os, mock_secrets):
 def test_restore_lnk3(mock_file, mock_os, mock_secrets):
     mock_secrets.token_urlsafe.return_value = '999999'
     mock_file.side_effect = OSError(errno.EPERM, "Permission denied")
-    with raises(SystemExit, match=r''):
+    with raises(SystemExit, match=r'name: open/read: Permission denied'):
         fake_super.restore('name',
                            {
                                'type': 'lnk',
@@ -135,7 +135,7 @@ def test_restore_lnk3(mock_file, mock_os, mock_secrets):
 def test_restore_lnk4(mock_file, mock_os, mock_secrets):
     mock_secrets.token_urlsafe.return_value = '999999'
     mock_os.rename.side_effect = OSError(errno.EPERM, "Permission denied")
-    with raises(SystemExit, match=r''):
+    with raises(SystemExit, match=r'rename.*: Permission denied'):
         fake_super.restore('name',
                            {
                                'type': 'lnk',
@@ -170,7 +170,7 @@ def test_restore_reg(mock_os):
 @patch('fake_super.os')
 def test_restore_reg2(mock_os):
     mock_os.chmod.side_effect = OSError(errno.EPERM, "Permission denied")
-    with raises(SystemExit, match=r''):
+    with raises(SystemExit, match=r'^/file/name: chmod: Permission denied'):
         fake_super.restore('/file/name',
                            {
                                'type': 'reg',
@@ -181,7 +181,7 @@ def test_restore_reg2(mock_os):
 
 
 def test_restore_unknown():
-    with raises(SystemExit, match=r''):
+    with raises(SystemExit, match=r'''^/file/name: Don't know how to create whiteout entry'''):
         fake_super.restore('/file/name',
                            {
                                'type': 'wht',
@@ -193,7 +193,7 @@ def test_restore_unknown():
 
 @patch('fake_super.os')
 def test_restore_key(mock_os):
-    with raises(KeyError, match=r''):
+    with raises(KeyError, match=r"^'perms'$"):
         fake_super.restore('/file/name',
                            {
                                'type': 'reg',
@@ -206,7 +206,7 @@ def test_restore_key(mock_os):
 @patch('fake_super.os')
 def test_restore_fail(mock_os):
     mock_os.lchown.side_effect = OSError(errno.EPERM, "Permission denied")
-    with raises(SystemExit, match=r''):
+    with raises(SystemExit, match=r'^/file/name: chown: Permission denied'):
         fake_super.restore('/file/name',
                            {
                                'type': 'reg',

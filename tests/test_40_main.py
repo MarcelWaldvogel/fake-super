@@ -17,7 +17,7 @@ def assertSimilar(a, b):
 
 def test_empty():
     # Also outputs "error: the following arguments are required: files"
-    with raises(SystemExit, match=r''):
+    with raises(SystemExit, match=r'2'):
         fake_super.main()
 
 
@@ -25,7 +25,7 @@ def test_help():
     # Also outputs
     # "usage: nosetests3 [-h] [--version] [--restore] [--quiet]
     #     files [files ...]"
-    with raises(SystemExit, match=r''):
+    with raises(SystemExit, match=r'0'):
         fake_super.main(['--help'])
 
 
@@ -72,7 +72,7 @@ def test_noattr2(mock_getxattr):
     # "dev/something5: Missing `user.rsync.%stat` attribute, skipping"
     mock_getxattr.side_effect = OSError(errno.ENODATA,
                                         "No such attribute")
-    with raises(SystemExit, match=r''):
+    with raises(SystemExit, match=r'Some errors occured'):
         fake_super.main(
             ['--quiet', '--restore', '/dev/something5', '/dev/something6'])
 
@@ -81,12 +81,12 @@ def test_noattr2(mock_getxattr):
 def test_nofile(mock_getxattr):
     mock_getxattr.side_effect = OSError(
         errno.ENOENT, "No such file or directory")
-    with raises(SystemExit, match=r''):
+    with raises(SystemExit, match=r'^/dev/something3: No such file or directory'):
         fake_super.main(['--quiet', '--restore', '/dev/something3'])
 
 
 @patch('fake_super.os.getxattr')
 def test_bad_xattr(mock_getxattr):
     mock_getxattr.return_value = b'1 2 3'
-    with raises(SystemExit, match=r''):
+    with raises(SystemExit, match=r'^/dev/something4: Illegal stat info'):
         fake_super.main(['--quiet', '--restore', '/dev/something4'])
