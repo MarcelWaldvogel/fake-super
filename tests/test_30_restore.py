@@ -181,7 +181,8 @@ def test_restore_reg2(mock_os):
 
 
 def test_restore_unknown():
-    with raises(SystemExit, match=r'''^/file/name: Don't know how to create whiteout entry'''):
+    with raises(SystemExit,
+                match=r"^/file/name: Don't know how to create whiteout entry"):
         fake_super.restore('/file/name',
                            {
                                'type': 'wht',

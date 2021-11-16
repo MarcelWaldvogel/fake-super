@@ -56,17 +56,20 @@ def test_unstat1_illegal_type():
 
 
 def test_unstat2_illegal_major():
-    with raises(StatFormatError, match=r'^major,minor device ids given for non-device'):
+    with raises(StatFormatError,
+                match=r'^major,minor device ids given for non-device'):
         unstat(b'040444 1,0 0:0')
 
 
 def test_unstat2_illegal_major_num():
-    with raises(StatFormatError, match=r'^numeric major,minor device ids required'):
+    with raises(StatFormatError,
+                match=r'^numeric major,minor device ids required'):
         unstat(b'060444 X,0 0:0')
 
 
 def test_unstat3_illegal_minor():
-    with raises(StatFormatError, match=r'^major,minor device ids given for non-device'):
+    with raises(StatFormatError,
+                match=r'^major,minor device ids given for non-device'):
         unstat(b'040444 0,1 0:0')
 
 
@@ -86,12 +89,14 @@ def test_unstat5_newline():
 
 
 def test_unstat6_major_minor_rev():
-    with raises(StatFormatError, match=r'''^device id as 'major,minor' required'''):
+    with raises(StatFormatError,
+                match=r'''^device id as 'major,minor' required'''):
         unstat(b'020444 0,1,2 0:0')
 
 
 def test_unstat7_user_group_other():
-    with raises(StatFormatError, match=r'''^ownership as 'owner:group' required'''):
+    with raises(StatFormatError,
+                match=r'''^ownership as 'owner:group' required'''):
         unstat(b'020444 0,1 0:0:0')
 
 

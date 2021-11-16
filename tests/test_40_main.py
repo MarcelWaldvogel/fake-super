@@ -81,7 +81,8 @@ def test_noattr2(mock_getxattr):
 def test_nofile(mock_getxattr):
     mock_getxattr.side_effect = OSError(
         errno.ENOENT, "No such file or directory")
-    with raises(SystemExit, match=r'^/dev/something3: No such file or directory'):
+    with raises(SystemExit,
+                match=r'^/dev/something3: No such file or directory'):
         fake_super.main(['--quiet', '--restore', '/dev/something3'])
 
 
