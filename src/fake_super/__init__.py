@@ -7,6 +7,7 @@ from pathlib import Path
 import secrets
 import stat
 import sys
+# For Python<3.8 instead of importlib.metadata
 from importlib_metadata import version, PackageNotFoundError
 
 try:
@@ -32,9 +33,6 @@ ftypes = {
     stat.S_IFDIR: 'dir',
     stat.S_IFCHR: 'chr',
     stat.S_IFIFO: 'fif',
-    stat.S_IFDOOR: 'dor',  # type: ignore
-    stat.S_IFPORT: 'prt',  # type: ignore
-    stat.S_IFWHT: 'wht'    # type: ignore
 }
 fdesc = {
     'sck': "socket",
