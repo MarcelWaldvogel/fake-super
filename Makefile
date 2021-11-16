@@ -2,7 +2,7 @@ python-package:
 	${RM} -f dist/*
 	python3 -m build
 
-pypi:	python-package
+pypi:	python-package test
 	twine upload dist/*
 
 test:	tests
