@@ -8,6 +8,6 @@ pypi:	python-package test
 test:	tests
 tests:
 	flake8
-	tox
+	PYTHONPATH= tox
 
 .PHONY: python-package pypi tests test
