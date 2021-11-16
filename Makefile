@@ -1,6 +1,6 @@
 python-package:
 	${RM} -f dist/*
-	./setup.py sdist bdist_wheel
+	python3 -m build
 
 pypi:	python-package
 	twine upload dist/*
@@ -8,6 +8,6 @@ pypi:	python-package
 test:	tests
 tests:
 	flake8
-	nosetests3
+	tox
 
 .PHONY: python-package pypi tests test

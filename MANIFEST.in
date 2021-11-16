@@ -1,0 +1,1 @@
+exclude tests .gitignore .gitlab-ci.yml Makefile

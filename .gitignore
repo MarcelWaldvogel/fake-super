@@ -1,8 +1,10 @@
-__pycache__
+__pycache__/
 .mypy_cache
 .coverage
 coverage.xml
 .*.swp
+/.tox/
+/.eggs/
 /build/
 /dist/
-/*.egg-info/
+*.egg-info/

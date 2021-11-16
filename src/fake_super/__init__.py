@@ -7,8 +7,13 @@ from pathlib import Path
 import secrets
 import stat
 import sys
+from importlib_metadata import version, PackageNotFoundError
 
-from fake_super.version import VERSION
+try:
+    VERSION = version('fake_super')
+except PackageNotFoundError:
+    # package is not installed
+    VERSION = '[UNKNOWN]'
 
 
 class FormatError(ValueError):
