@@ -17,4 +17,4 @@ tests:
 	cd src && mypy -p fake_super
 	PYTHONPATH= tox
 
-.PHONY: python-package pypi tests test
+.PHONY: python-package distribution-package pypi tests test
