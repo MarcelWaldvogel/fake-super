@@ -58,11 +58,11 @@ An example for a plain file with mode `rw-rw-r--`:
 
 `/dev/null` from Linux would be annotated as follows:
 ```
-060666 1,3 0:0
-^^ S_IFBLK, block device
-   ^^^ R/W for everyone
-       ^^^ Device ID 1,3
-           ^^^ Belonging to root
+60666 1,3 0:0
+^ S_IFBLK, block device (no leading zeros)
+  ^^^ R/W for everyone
+      ^^^ Device ID 1,3
+          ^^^ Belonging to root
 ```
 
 # Security considerations
