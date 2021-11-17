@@ -18,7 +18,6 @@ stages:
   - lint
   - unit
   - test
-  - versions
 
 # lint
 flake8:
@@ -43,39 +42,39 @@ unit:
     reports:
       cobertura: coverage.xml
 
-# versions
+# versions (now in test)
 py36:
-  stage: versions
+  stage: test
   image: python:3.6
   script:
     - pip3 install tox
     - tox -e py36
 py37:
-  stage: versions
+  stage: test
   image: python:3.7
   script:
     - pip3 install tox
     - tox -e py37
 py38:
-  stage: versions
+  stage: test
   image: python:3.8
   script:
     - pip3 install tox
     - tox -e py38
 py310:
-  stage: versions
+  stage: test
   image: python:3.10
   script:
     - pip3 install tox
     - tox -e py310
 pypy37:
-  stage: versions
+  stage: test
   image: pypy:3.7
   script:
     - pip3 install tox
     - tox -e pypy3
 pypy38:
-  stage: versions
+  stage: test
   image: pypy:3.8
   script:
     - pip3 install tox
