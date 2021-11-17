@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), this
 project adheres to [Semantic Versioning](https://semver.org/), and
 [Gitmoji](https://gitmoji.carloscuesta.me/).
 
+# 0.2.1 - 2021-11-17
+
+## Added
+
+- `project_urls` and `README.md` are now packaged
+
+## Fixed
+
+## Changed
+
 # 0.2.0 - 2021-11-17
 
 ## Added

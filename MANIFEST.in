@@ -1,1 +1,7 @@
-exclude tests .gitignore .gitlab-ci.yml Makefile
+exclude tests
+exclude .gitignore
+exclude .gitlab-ci.yml
+exclude Makefile
+
+global-include README.md
+global-include CHANGELOG.md
