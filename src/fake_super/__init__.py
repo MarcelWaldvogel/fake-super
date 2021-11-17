@@ -53,8 +53,8 @@ def unstat(s):
     parts = s.split(' ')
     if len(parts) != 3:
         raise StatFormatError(f"three parts required: {s}")
-    if len(parts[0]) != 6:
-        raise StatFormatError(f"six-digit mode required: {s}")
+    if len(parts[0]) < 3 or len(parts[0]) > 6:
+        raise StatFormatError(f"three-to-six-digit mode required: {s}")
 
     # Part 0: Mode (type, permissions)
     if parts[0].lower().startswith('0o'):

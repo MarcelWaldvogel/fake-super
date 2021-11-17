@@ -31,8 +31,8 @@ def test_unstat1_positive2():
 
 
 def test_unstat1_length():
-    with raises(StatFormatError, match=r'^six-digit mode required:'):
-        unstat(b'000 0,0 0:0')
+    with raises(StatFormatError, match=r'^three-to-six-digit mode required:'):
+        unstat(b'0 0,0 0:0')
 
 
 def test_unstat1_illegal_number1():

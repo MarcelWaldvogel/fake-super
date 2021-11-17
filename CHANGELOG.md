@@ -18,6 +18,7 @@ project adheres to [Semantic Versioning](https://semver.org/), and
 
 - Newlines (and other characters) at end of the string (and individual number
   fields) are now recognized and complained about.
+- `rsync` does not always use full 6 digits for the mode
 
 ## Changed
 
