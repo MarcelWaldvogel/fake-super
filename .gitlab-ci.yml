@@ -14,9 +14,6 @@ default:
     image: python:3.9
 before_script:
     - python --version
-    - pip3 install virtualenv
-    - virtualenv venv
-    - source venv/bin/activate
 stages:
     - lint
     - unit
