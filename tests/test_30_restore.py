@@ -170,10 +170,10 @@ def test_restore_reg(mock_os):
 @patch('fake_super.os')
 def test_restore_reg2(mock_os):
     mock_os.chmod.side_effect = OSError(errno.EPERM, "Permission denied")
-    with raises(SystemExit, match=r'^/file/name: chmod: Permission denied'):
-        fake_super.restore('/file/name',
+    with raises(SystemExit, match=r'^/dir/name: chmod: Permission denied'):
+        fake_super.restore('/dir/name',
                            {
-                               'type': 'reg',
+                               'type': 'dir',
                                'perms': 0o4444,
                                'owner': 123,
                                'group': 456

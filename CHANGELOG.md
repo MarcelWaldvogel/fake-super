@@ -10,6 +10,7 @@ project adheres to [Semantic Versioning](https://semver.org/), and
 
 ## Added
 
+- Restore directory permissions
 - Logo
 - Support Python 3.10, PyPy 7.3.7 in (Python 3.7 and 3.8 mode)
 - Tests in VSCode/VSCodium

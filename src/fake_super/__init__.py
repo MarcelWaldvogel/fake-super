@@ -160,7 +160,7 @@ def restore(fn, stat):
             os.rename(temp_fn, fn)
         except OSError as e:
             sys.exit("rename(%s, %s): %s" % (temp_fn, fn, e.strerror))
-    elif t == 'reg':
+    elif t == 'reg' or t == 'dir':
         # chown(2) resets setuid bits etc. in many settings, so it goes first
         chown(fn, stat)
         try:
