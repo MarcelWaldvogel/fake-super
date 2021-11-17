@@ -11,11 +11,18 @@ project adheres to [Semantic Versioning](https://semver.org/), and
 ## Added
 
 - Logo
+- Support Python 3.10, PyPy 7.3.7 in (Python 3.7 and 3.8 mode)
+- Tests in VSCode/VSCodium
 
 ## Fixed
 
+- Newlines (and other characters) at end of the string (and individual number
+  fields) are now recognized and complained about.
+
 ## Changed
 
+- Switch build/test/CI to `setup.cfg`, `tox`, `pytest`
+- Exceptions raised by `unstat()` now also return strings, not tuples
 - Homepage
 
 # 0.1.1 - 2021-11-14

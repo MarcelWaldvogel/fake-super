@@ -2,7 +2,7 @@ from pathlib import Path
 import errno
 
 from mock import patch, call
-from nose.tools import raises
+from pytest import raises
 
 import fake_super
 
@@ -15,18 +15,18 @@ def assertSimilar(a, b):
                              % (a, type(a), b, type(b)))
 
 
-@raises(SystemExit)
 def test_empty():
     # Also outputs "error: the following arguments are required: files"
-    fake_super.main()
+    with raises(SystemExit, match=r'2'):
+        fake_super.main()
 
 
-@raises(SystemExit)
 def test_help():
     # Also outputs
     # "usage: nosetests3 [-h] [--version] [--restore] [--quiet]
     #     files [files ...]"
-    fake_super.main(['--help'])
+    with raises(SystemExit, match=r'0'):
+        fake_super.main(['--help'])
 
 
 @patch('builtins.print')
@@ -66,27 +66,28 @@ def test_noattr(mock_getxattr):
 
 
 @patch('fake_super.os.getxattr')
-@raises(SystemExit)
 def test_noattr2(mock_getxattr):
     # also outputs
     # "dev/something5: Missing `user.rsync.%stat` attribute, skipping"
     # "dev/something5: Missing `user.rsync.%stat` attribute, skipping"
     mock_getxattr.side_effect = OSError(errno.ENODATA,
                                         "No such attribute")
-    fake_super.main(
-        ['--quiet', '--restore', '/dev/something5', '/dev/something6'])
+    with raises(SystemExit, match=r'Some errors occured'):
+        fake_super.main(
+            ['--quiet', '--restore', '/dev/something5', '/dev/something6'])
 
 
-@ patch('fake_super.os.getxattr')
-@ raises(SystemExit)
+@patch('fake_super.os.getxattr')
 def test_nofile(mock_getxattr):
     mock_getxattr.side_effect = OSError(
         errno.ENOENT, "No such file or directory")
-    fake_super.main(['--quiet', '--restore', '/dev/something3'])
+    with raises(SystemExit,
+                match=r'^/dev/something3: No such file or directory'):
+        fake_super.main(['--quiet', '--restore', '/dev/something3'])
 
 
-@ patch('fake_super.os.getxattr')
-@ raises(SystemExit)
+@patch('fake_super.os.getxattr')
 def test_bad_xattr(mock_getxattr):
     mock_getxattr.return_value = b'1 2 3'
-    fake_super.main(['--quiet', '--restore', '/dev/something4'])
+    with raises(SystemExit, match=r'^/dev/something4: Illegal stat info'):
+        fake_super.main(['--quiet', '--restore', '/dev/something4'])
