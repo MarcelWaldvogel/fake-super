@@ -88,7 +88,7 @@ def test_restore_lnk(mock_file, mock_lchown, mock_symlink, mock_rename,
                            'group': 456
                        })
     mock_file.assert_called_with('name', 'r')
-    mock_symlink.assert_called_with(Path('.name.999999'), '../some/path')
+    mock_symlink.assert_called_with('../some/path', Path('.name.999999'))
     mock_lchown.assert_called_with(Path('.name.999999'), 123, 456)
     mock_rename.assert_called_with(Path('.name.999999'), 'name')
 
@@ -99,7 +99,7 @@ def test_restore_lnk(mock_file, mock_lchown, mock_symlink, mock_rename,
 def test_restore_lnk2(mock_file, mock_os, mock_secrets):
     mock_secrets.token_urlsafe.return_value = '999999'
     mock_os.symlink.side_effect = OSError(errno.EPERM, "Permission denied")
-    with raises(SystemExit, match=r'mknod: Permission denied'):
+    with raises(SystemExit, match=r'symlink: Permission denied'):
         fake_super.restore('name',
                            {
                                'type': 'lnk',
@@ -146,8 +146,8 @@ def test_restore_lnk4(mock_file, mock_os, mock_secrets):
                                'group': 456
                            })
     mock_file.assert_called_with('name', 'r')
-    # The first argument, a PosixPath, is mangled by pytest
-    assert mock_os.symlink.call_args.args[1:] == ('../some/path',)
+    # The PosixPath argument is mangled by pytest
+    assert mock_os.symlink.call_args.args[0] == '../some/path'
     assert mock_os.lchown.call_args.args[1:] == (123, 456)
 
 

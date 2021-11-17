@@ -152,9 +152,9 @@ def restore(fn, stat):
             sys.exit("%s: open/read: %s" % (fn, e.strerror))
         temp_fn = mktempfn(fn)
         try:
-            os.symlink(temp_fn, dest)
+            os.symlink(dest, temp_fn)
         except OSError as e:
-            sys.exit("%s (for %s): mknod: %s" % (temp_fn, fn, e.strerror))
+            sys.exit("%s (for %s): symlink: %s" % (temp_fn, fn, e.strerror))
         chown(temp_fn, stat, delete_on_error=True)
         try:
             os.rename(temp_fn, fn)
