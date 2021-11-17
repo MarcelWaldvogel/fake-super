@@ -5,83 +5,83 @@
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 variables:
-    PIP_CACHE_DIR: '$CI_PROJECT_DIR/.cache/pip'
+  PIP_CACHE_DIR: '$CI_PROJECT_DIR/.cache/pip'
 cache:
-    paths:
-        - '.cache/pip'
-        - venv/
+  paths:
+    - '.cache/pip'
+    - venv/
 default:
-    image: python:3.9
+  image: python:3.9
 before_script:
-    - python --version
+  - python --version
 stages:
-    - lint
-    - unit
-    - test
-    - versions
+  - lint
+  - unit
+  - test
+  - versions
 
 # lint
 flake8:
-    stage: lint
-    script:
-        - pip3 install flake8
-        - flake8
+  stage: lint
+  script:
+    - pip3 install flake8
+    - flake8
 mypy:
-    stage: lint
-    script:
-        - pip3 install mypy importlib_metadata
-        - cd src && mypy -p fake_super
+  stage: lint
+  script:
+    - pip3 install mypy importlib_metadata
+    - cd src && mypy -p fake_super
 
 # unit
 unit:
-    stage: unit
-    image: python:3.9
-    script:
-        - pip3 install tox
-        - tox -e py39
-    artifacts:
-        reports:
-            cobertura: coverage.xml
+  stage: unit
+  image: python:3.9
+  script:
+    - pip3 install tox
+    - tox -e py39
+  artifacts:
+    reports:
+      cobertura: coverage.xml
 
 # versions
 py36:
-    stage: versions
-    image: python:3.6
-    script:
-        - pip3 install tox
-        - tox -e py36
+  stage: versions
+  image: python:3.6
+  script:
+    - pip3 install tox
+    - tox -e py36
 py37:
-    stage: versions
-    image: python:3.7
-    script:
-        - pip3 install tox
-        - tox -e py37
+  stage: versions
+  image: python:3.7
+  script:
+    - pip3 install tox
+    - tox -e py37
 py38:
-    stage: versions
-    image: python:3.8
-    script:
-        - pip3 install tox
-        - tox -e py38
+  stage: versions
+  image: python:3.8
+  script:
+    - pip3 install tox
+    - tox -e py38
 py310:
-    stage: versions
-    image: python:3.10
-    script:
-        - pip3 install tox
-        - tox -e py310
+  stage: versions
+  image: python:3.10
+  script:
+    - pip3 install tox
+    - tox -e py310
 pypy37:
-    stage: versions
-    image: pypy:3.7
-    script:
-        - pip3 install tox
-        - tox -e pypy3
+  stage: versions
+  image: pypy:3.7
+  script:
+    - pip3 install tox
+    - tox -e pypy3
 pypy38:
-    stage: versions
-    image: pypy:3.8
-    script:
-        - pip3 install tox
-        - tox -e pypy3
+  stage: versions
+  image: pypy:3.8
+  script:
+    - pip3 install tox
+    - tox -e pypy3
 
 # test
 include:
-    - template: Security/SAST.gitlab-ci.yml
-    - template: Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
